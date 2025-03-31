@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>構内マップ + 現在地表示</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css" rel="stylesheet" />
+  <style>
+    body, html { margin: 0; padding: 0; height: 100%; }
+    #map { width: 100%; height: 100vh; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
+  <script>
+    // MapLibre地図の初期化
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: 'https://demotiles.maplibre.org/style.json',
+      center: [139.7421, 35.7101], // 初期位置（早稲田付近に調整可能）
+      zoom: 16
+    });
+
+    // ズーム・回転コントロール
+    map.addControl(new maplibregl.NavigationControl());
+
+    // 現在地の取得
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        const lng = position.coords.longitude;
+        const lat = position.coords.latitude;
+
+        // 現在地マーカーの表示
+        const userMarker = new maplibregl.Marker({ color: 'blue' })
+          .setLngLat([lng, lat])
+          .addTo(map);
+
+        // 現在地にズーム
+        map.flyTo({ center: [lng, lat], zoom: 17 });
+
+      }, error => {
+        alert("現在地の取得に失敗しました");
+        console.error(error);
+      });
+    } else {
+      alert("この端末ではGPSが使えません");
+    }
+  </script>
+</body>
+</html>
+
